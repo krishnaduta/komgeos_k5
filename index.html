@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>WebGIS Tutupan Lahan IKN</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-sA+RlOzLrQdWfOmfvdCG4h+jtHgPqe8Lyzio+AcC0Po="
+    crossorigin=""
+  />
+  <style>
+    #map { position:absolute; top:0; bottom:0; right:0; left:0; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <!-- Leaflet JS -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-o9N1jF+ng1JPgEmzI9Z62Fmtw7e6par9oJHChSR+Y4M="
+    crossorigin=""
+  ></script>
+
+  <script>
+    // 1) Inisialisasi Map
+    var map = L.map('map').setView([-0.2616, 117.2089], 11); // koordinat IKN
+
+    // 2) Base layer (OpenStreetMap)
+    var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // 3) Tile layers hasil gdal2tiles
+    var lc2019 = L.tileLayer('tiles/lc2019/{z}/{x}/{y}.png', {
+      opacity: 0.7,
+      attribution: 'Tutupan Lahan 2019'
+    });
+    var lc2024 = L.tileLayer('tiles/lc2024/{z}/{x}/{y}.png', {
+      opacity: 0.7,
+      attribution: 'Tutupan Lahan 2024'
+    });
+    var img2019 = L.tileLayer('tiles/img2019/{z}/{x}/{y}.png', {
+      attribution: 'Citra Satelit 2019'
+    });
+    var img2024 = L.tileLayer('tiles/img2024/{z}/{x}/{y}.png', {
+      attribution: 'Citra Satelit 2024'
+    });
+
+    // 4) Kelompokkan layer
+    var overlays = {
+      'Tutupan Lahan 2019': lc2019,
+      'Tutupan Lahan 2024': lc2024,
+      'Citra 2019': img2019,
+      'Citra 2024': img2024
+    };
+
+    // 5) Layer control
+    L.control.layers({ 'OpenStreetMap': osm }, overlays, {
+      collapsed: false
+    }).addTo(map);
+
+    // (opsional) aktifkan satu layer default
+    img2024.addTo(map);
+  </script>
+</body>
+</html>
