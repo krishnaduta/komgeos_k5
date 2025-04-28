@@ -5,9 +5,9 @@
     <title>Webmap Raster Komplet</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
 
-    <!-- Mapbox GL JS CDN via unpkg (Aman untuk GitHub Pages) -->
-    <link href="https://unpkg.com/mapbox-gl@3.1.1/files/dist/mapbox-gl.css" rel="stylesheet" />
-    <script src="https://unpkg.com/mapbox-gl@3.1.1/files/dist/mapbox-gl.js"></script>
+    <!-- ✅ Mapbox GL JS (Benar via unpkg) -->
+    <link href="https://unpkg.com/mapbox-gl@3.1.1/dist/mapbox-gl.css" rel="stylesheet" />
+    <script src="https://unpkg.com/mapbox-gl@3.1.1/dist/mapbox-gl.js"></script>
 
     <style>
         body { margin: 0; padding: 0; }
@@ -56,10 +56,9 @@
 
 <div class="menu">
     <h4>Layer Control</h4>
-    <input type="checkbox" id="layer1" checked><label for="layer1">Klasifikasi 2022</label><br>
-    <input type="checkbox" id="layer2" checked><label for="layer2">Klasifikasi 2024</label><br>
-    <input type="checkbox" id="layer3" checked><label for="layer3">Citra 2024</label><br><br>
-    <input type="checkbox" id="layer3" checked><label for="layer4">Citra 2022</label><br><br>
+    <input type="checkbox" id="layer1" checked><label for="layer1">Klasifikasi 2024 (4pa3fz)</label><br>
+    <input type="checkbox" id="layer2" checked><label for="layer2">Klasifikasi 2024 (18syak)</label><br>
+    <input type="checkbox" id="layer3" checked><label for="layer3">Citra 2024 (dtu0f0)</label><br><br>
 
     <h4>Basemap</h4>
     <select id="basemap">
@@ -81,7 +80,7 @@
 </div>
 
 <script>
-    mapboxgl.accessToken = 'pk.eyJ1Ijoia3Jpc2huYWR1dGEzMCIsImEiOiJjbWEwdW5mcmQwdG96Mm1zZmZuazN0azAxIn0.dG3aLvrIN579dciLaViD9w'; // Ganti dengan public token kamu (pk.)
+    mapboxgl.accessToken = 'pk.eyJ1Ijoia3Jpc2huYWR1dGEzMCIsImEiOiJjbWEwdW5mcmQwdG96Mm1zZmZuazN0azAxIn0.dG3aLvrIN579dciLaViD9w'; // Ganti dengan public token kamu
 
     const map = new mapboxgl.Map({
         container: 'map',
@@ -130,7 +129,7 @@
             paint: { 'raster-opacity': 1 }
         });
 
-        // Toggle Layer Visibility
+        // Toggle Layer
         document.getElementById('layer1').addEventListener('change', function (e) {
             map.setLayoutProperty('klasifikasi-4pa3fz', 'visibility', e.target.checked ? 'visible' : 'none');
         });
@@ -159,7 +158,6 @@
             map.setPaintProperty('citra-dtu0f0', 'raster-opacity', opacity);
         });
 
-        // Fungsi Reload Layer Setelah Ganti Style
         function reloadLayers() {
             map.addSource('klasifikasi-4pa3fz', {
                 type: 'raster',
