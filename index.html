@@ -28,7 +28,7 @@
   <script>
     // 1) Inisialisasi Map
     var map = L.map('map').setView([-0.2616, 117.2089], 11); // koordinat IKN
-
+    console.log('Map berhasil dimuat');
     // 2) Base layer (OpenStreetMap)
     var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
@@ -52,9 +52,9 @@
 
     // 4) Kelompokkan layer
     var overlays = {
-      'Tutupan Lahan 2019': lc2022,
+      'Tutupan Lahan 2022': lc2022,
       'Tutupan Lahan 2024': lc2024,
-      'Citra 2019': img2022,
+      'Citra 2022': img2022,
       'Citra 2024': img2024
     };
 
