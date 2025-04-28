@@ -35,7 +35,7 @@
     }).addTo(map);
 
     // 3) Tile layers hasil gdal2tiles
-    var lc2019 = L.tileLayer('tiles/klasifikasi2022/{z}/{x}/{y}.png', {
+    var lc2022 = L.tileLayer('tiles/klasifikasi2022/{z}/{x}/{y}.png', {
       opacity: 0.7,
       attribution: 'Tutupan Lahan 2022'
     });
@@ -43,7 +43,7 @@
       opacity: 0.7,
       attribution: 'Tutupan Lahan 2024'
     });
-    var img2019 = L.tileLayer('tiles/citra2022/{z}/{x}/{y}.png', {
+    var img2022 = L.tileLayer('tiles/citra2022/{z}/{x}/{y}.png', {
       attribution: 'Citra Satelit 2022'
     });
     var img2024 = L.tileLayer('tiles/citra2024/{z}/{x}/{y}.png', {
@@ -52,9 +52,9 @@
 
     // 4) Kelompokkan layer
     var overlays = {
-      'Tutupan Lahan 2019': lc2019,
+      'Tutupan Lahan 2019': lc2022,
       'Tutupan Lahan 2024': lc2024,
-      'Citra 2019': img2019,
+      'Citra 2019': img2022,
       'Citra 2024': img2024
     };
 
