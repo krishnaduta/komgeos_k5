@@ -56,9 +56,10 @@
 
 <div class="menu">
     <h4>Layer Control</h4>
-    <input type="checkbox" id="layer1" checked><label for="layer1">Klasifikasi 2024 (4pa3fz)</label><br>
-    <input type="checkbox" id="layer2" checked><label for="layer2">Klasifikasi 2024 (18syak)</label><br>
-    <input type="checkbox" id="layer3" checked><label for="layer3">Citra 2024 (dtu0f0)</label><br><br>
+    <input type="checkbox" id="layer1" checked><label for="layer1">Klasifikasi 2022</label><br>
+    <input type="checkbox" id="layer2" checked><label for="layer2">Klasifikasi 2024 </label><br>
+    <input type="checkbox" id="layer3" checked><label for="layer3">Citra 2024 </label><br><br>
+    <input type="checkbox" id="layer3" checked><label for="layer3">Citra 2022 </label><br><br>
 
     <h4>Basemap</h4>
     <select id="basemap">
@@ -80,7 +81,7 @@
 </div>
 
 <script>
-    mapboxgl.accessToken = 'pk.eyJ1Ijoia3Jpc2huYWR1dGEzMCIsImEiOiJjbWEwdW5mcmQwdG96Mm1zZmZuazN0azAxIn0.dG3aLvrIN579dciLaViD9w'; // Ganti dengan public token kamu
+    mapboxgl.accessToken = 'pk.eyJ1Ijoia3Jpc2huYWR1dGEzMCIsImEiOiJjbWExNHY5NGwxcWxlMmpzN202dzkzd3JiIn0.NscHDoB1xCSVbmCnkDvfzA'; // Ganti dengan public token kamu
 
     const map = new mapboxgl.Map({
         container: 'map',
@@ -91,53 +92,68 @@
 
     map.on('load', function () {
         // Layer Raster 1
-        map.addSource('klasifikasi-4pa3fz', {
+        map.addSource('klasifikasi2024', {
             type: 'raster',
-            url: 'mapbox://krishnaduta30.4pa3fz',
+            url: 'mapbox://krishnaduta30.dd3ihpd8',
             tileSize: 256
         });
         map.addLayer({
-            id: 'klasifikasi-4pa3fz',
+            id: 'klasifikasi2024',
             type: 'raster',
-            source: 'klasifikasi-4pa3fz',
+            source: 'klasifikasi2024',
             paint: { 'raster-opacity': 1 }
         });
 
         // Layer Raster 2
-        map.addSource('klasifikasi-18syak', {
+        map.addSource('klasifikasi2022', {
             type: 'raster',
-            url: 'mapbox://krishnaduta30.18syak',
+            url: 'mapbox://krishnaduta30.1tdin3xs',
             tileSize: 256
         });
         map.addLayer({
-            id: 'klasifikasi-18syak',
+            id: 'klasifikasi2022',
             type: 'raster',
-            source: 'klasifikasi-18syak',
+            source: 'klasifikasi2022',
             paint: { 'raster-opacity': 1 }
         });
 
         // Layer Raster 3
-        map.addSource('citra-dtu0f0', {
+        map.addSource('citra2024', {
             type: 'raster',
-            url: 'mapbox://krishnaduta30.dtu0f0',
+            url: 'mapbox://krishnaduta30.1nm8az0p',
             tileSize: 256
         });
         map.addLayer({
-            id: 'citra-dtu0f0',
+            id: 'citra2024',
             type: 'raster',
-            source: 'citra-dtu0f0',
+            source: 'citra2024',
+            paint: { 'raster-opacity': 1 }
+        });
+         // Layer Raster 4
+        map.addSource('citra2022', {
+            type: 'raster',
+            url: 'mapbox://krishnaduta30.71l9z45x',
+            tileSize: 256
+        });
+        map.addLayer({
+            id: 'citra2022',
+            type: 'raster',
+            source: 'citra2022',
             paint: { 'raster-opacity': 1 }
         });
 
         // Toggle Layer
         document.getElementById('layer1').addEventListener('change', function (e) {
-            map.setLayoutProperty('klasifikasi-4pa3fz', 'visibility', e.target.checked ? 'visible' : 'none');
+            map.setLayoutProperty('klasifikasi2024', 'visibility', e.target.checked ? 'visible' : 'none');
         });
         document.getElementById('layer2').addEventListener('change', function (e) {
-            map.setLayoutProperty('klasifikasi-18syak', 'visibility', e.target.checked ? 'visible' : 'none');
+            map.setLayoutProperty('klasifikasi2022', 'visibility', e.target.checked ? 'visible' : 'none');
         });
         document.getElementById('layer3').addEventListener('change', function (e) {
-            map.setLayoutProperty('citra-dtu0f0', 'visibility', e.target.checked ? 'visible' : 'none');
+            map.setLayoutProperty('citra2024', 'visibility', e.target.checked ? 'visible' : 'none');
+        });
+        document.getElementById('layer4').addEventListener('change', function (e) {
+            map.setLayoutProperty('citra2022', 'visibility', e.target.checked ? 'visible' : 'none');
         });
 
         // Ganti Basemap
@@ -153,46 +169,61 @@
         // Control Opacity
         document.getElementById('opacity-slider').addEventListener('input', function (e) {
             const opacity = parseFloat(e.target.value);
-            map.setPaintProperty('klasifikasi-4pa3fz', 'raster-opacity', opacity);
-            map.setPaintProperty('klasifikasi-18syak', 'raster-opacity', opacity);
-            map.setPaintProperty('citra-dtu0f0', 'raster-opacity', opacity);
+            map.setPaintProperty('klasifikasi2024', 'raster-opacity', opacity);
+            map.setPaintProperty('klasifikasi2022', 'raster-opacity', opacity);
+            map.setPaintProperty('citra2024', 'raster-opacity', opacity);
+            map.setPaintProperty('citra2022', 'raster-opacity', opacity);
         });
 
         function reloadLayers() {
-            map.addSource('klasifikasi-4pa3fz', {
+            map.addSource('klasifikasi2024', {
+            type: 'raster',
+            url: 'mapbox://krishnaduta30.dd3ihpd8',
+            tileSize: 256
+            });
+            map.addLayer({
+                id: 'klasifikasi2024',
                 type: 'raster',
-                url: 'mapbox://krishnaduta30.4pa3fz',
+                source: 'klasifikasi2024',
+                paint: { 'raster-opacity': 1 }
+            });
+    
+            // Layer Raster 2
+            map.addSource('klasifikasi2022', {
+                type: 'raster',
+                url: 'mapbox://krishnaduta30.1tdin3xs',
                 tileSize: 256
             });
             map.addLayer({
-                id: 'klasifikasi-4pa3fz',
+                id: 'klasifikasi2022',
                 type: 'raster',
-                source: 'klasifikasi-4pa3fz',
-                paint: { 'raster-opacity': parseFloat(document.getElementById('opacity-slider').value) }
+                source: 'klasifikasi2022',
+                paint: { 'raster-opacity': 1 }
             });
-
-            map.addSource('klasifikasi-18syak', {
+    
+            // Layer Raster 3
+            map.addSource('citra2024', {
                 type: 'raster',
-                url: 'mapbox://krishnaduta30.18syak',
+                url: 'mapbox://krishnaduta30.1nm8az0p',
                 tileSize: 256
             });
             map.addLayer({
-                id: 'klasifikasi-18syak',
+                id: 'citra2024',
                 type: 'raster',
-                source: 'klasifikasi-18syak',
-                paint: { 'raster-opacity': parseFloat(document.getElementById('opacity-slider').value) }
+                source: 'citra2024',
+                paint: { 'raster-opacity': 1 }
             });
-
-            map.addSource('citra-dtu0f0', {
+             // Layer Raster 4
+            map.addSource('citra2022', {
                 type: 'raster',
-                url: 'mapbox://krishnaduta30.dtu0f0',
+                url: 'mapbox://krishnaduta30.71l9z45x',
                 tileSize: 256
             });
             map.addLayer({
-                id: 'citra-dtu0f0',
+                id: 'citra2022',
                 type: 'raster',
-                source: 'citra-dtu0f0',
-                paint: { 'raster-opacity': parseFloat(document.getElementById('opacity-slider').value) }
+                source: 'citra2022',
+                paint: { 'raster-opacity': 1 }
             });
         }
     });
