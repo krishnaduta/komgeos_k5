@@ -2,41 +2,66 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Webmap Raster Komplet</title>
+    <title>WebGIS Perubahan Tutupan Lahan IKN 2022-2024</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
 
-    <!-- ✅ Mapbox GL CSS via jsDelivr -->
+    <!-- Mapbox GL JS -->
     <link href="mapbox-gl.css" rel="stylesheet" />
-    
-    <!-- ✅ Mapbox GL JS via jsDelivr -->
     <script src="mapbox-gl.js"></script>
-
+    <!-- Mapbox Geocoder -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.min.js"></script>
 
     <style>
         body { margin: 0; padding: 0; }
-        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        #map { position: absolute; top: 60px; bottom: 0; width: 100%; }
+        
+        #header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #003366;
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            font-family: 'Open Sans', sans-serif;
+            z-index: 3;
+        }
+        #header img {
+            height: 40px;
+            margin-right: 15px;
+        }
+        #header h1 {
+            font-size: 18px;
+            margin: 0;
+        }
+
         .menu {
             position: absolute;
-            background: white;
-            padding: 10px;
+            top: 80px;
+            left: 10px;
+            background: rgba(255,255,255,0.9);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            font-size: 14px;
             font-family: 'Open Sans', sans-serif;
             z-index: 2;
-            top: 10px;
-            left: 10px;
-            border-radius: 5px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
             max-width: 220px;
         }
         .legend {
             position: absolute;
             bottom: 10px;
             left: 10px;
-            background: white;
+            background: rgba(255,255,255,0.9);
             padding: 10px;
-            font-family: 'Open Sans', sans-serif;
-            border-radius: 5px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             font-size: 12px;
+            font-family: 'Open Sans', sans-serif;
             z-index: 2;
         }
         .legend-item {
@@ -50,19 +75,27 @@
             margin-right: 5px;
             border: 1px solid #ccc;
         }
+        .mapboxgl-ctrl-geocoder {
+            min-width: 50%;
+        }
     </style>
 </head>
 
 <body>
+
+<div id="header">
+    <img src="logo_ugm.png" alt="Logo UGM">
+    <h1>WebGIS Perubahan Tutupan Lahan IKN 2022-2024</h1>
+</div>
 
 <div id="map"></div>
 
 <div class="menu">
     <h4>Layer Control</h4>
     <input type="checkbox" id="layer1" checked><label for="layer1">Klasifikasi 2022</label><br>
-    <input type="checkbox" id="layer2" checked><label for="layer2">Klasifikasi 2024 </label><br>
-    <input type="checkbox" id="layer3" checked><label for="layer3">Citra 2024 </label><br><br>
-    <input type="checkbox" id="layer4" checked><label for="layer4">Citra 2022 </label><br><br>
+    <input type="checkbox" id="layer2" checked><label for="layer2">Klasifikasi 2024</label><br>
+    <input type="checkbox" id="layer3" checked><label for="layer3">Citra 2024</label><br>
+    <input type="checkbox" id="layer4" checked><label for="layer4">Citra 2022</label><br><br>
 
     <h4>Basemap</h4>
     <select id="basemap">
@@ -84,7 +117,7 @@
 </div>
 
 <script>
-    mapboxgl.accessToken = 'pk.eyJ1Ijoia3Jpc2huYWR1dGEzMCIsImEiOiJjbWExNHY5NGwxcWxlMmpzN202dzkzd3JiIn0.NscHDoB1xCSVbmCnkDvfzA'; // Ganti dengan public token kamu
+    mapboxgl.accessToken = 'pk.eyJ1Ijoia3Jpc2huYWR1dGEzMCIsImEiOiJjbWExNHY5NGwxcWxlMmpzN202dzkzd3JiIn0.NscHDoB1xCSVbmCnkDvfzA';
 
     const map = new mapboxgl.Map({
         container: 'map',
@@ -93,64 +126,34 @@
         zoom: 9
     });
 
+    map.addControl(new mapboxgl.NavigationControl()); // zoom control
+    map.addControl(new mapboxgl.FullscreenControl()); // fullscreen button
+    map.addControl(new mapboxgl.ScaleControl({ maxWidth: 80, unit: 'metric' })); // scale bar
+
+    const geocoder = new MapboxGeocoder({
+        accessToken: mapboxgl.accessToken,
+        mapboxgl: mapboxgl
+    });
+    map.addControl(geocoder);
+
     map.on('load', function () {
-        // Layer Raster 1
-        map.addSource('klasifikasi2024', {
-            type: 'raster',
-            url: 'mapbox://krishnaduta30.36lm9tv6',
-            tileSize: 256
-        });
-        map.addLayer({
-            id: 'klasifikasi2024',
-            type: 'raster',
-            source: 'klasifikasi2024',
-            paint: { 'raster-opacity': 1 }
-        });
+        map.addSource('klasifikasi2024', { type: 'raster', url: 'mapbox://krishnaduta30.36lm9tv6', tileSize: 256 });
+        map.addLayer({ id: 'klasifikasi2024', type: 'raster', source: 'klasifikasi2024', paint: { 'raster-opacity': 1 } });
 
-        // Layer Raster 2
-        map.addSource('klasifikasi2022', {
-            type: 'raster',
-            url: 'mapbox://krishnaduta30.akeeywuh',
-            tileSize: 256
-        });
-        map.addLayer({
-            id: 'klasifikasi2022',
-            type: 'raster',
-            source: 'klasifikasi2022',
-            paint: { 'raster-opacity': 1 }
-        });
+        map.addSource('klasifikasi2022', { type: 'raster', url: 'mapbox://krishnaduta30.akeeywuh', tileSize: 256 });
+        map.addLayer({ id: 'klasifikasi2022', type: 'raster', source: 'klasifikasi2022', paint: { 'raster-opacity': 1 } });
 
-        // Layer Raster 3
-        map.addSource('citra2024', {
-            type: 'raster',
-            url: 'mapbox://krishnaduta30.1nm8az0p',
-            tileSize: 256
-        });
-        map.addLayer({
-            id: 'citra2024',
-            type: 'raster',
-            source: 'citra2024',
-            paint: { 'raster-opacity': 1 }
-        });
-         // Layer Raster 4
-        map.addSource('citra2022', {
-            type: 'raster',
-            url: 'mapbox://krishnaduta30.71l9z45x',
-            tileSize: 256
-        });
-        map.addLayer({
-            id: 'citra2022',
-            type: 'raster',
-            source: 'citra2022',
-            paint: { 'raster-opacity': 1 }
-        });
+        map.addSource('citra2024', { type: 'raster', url: 'mapbox://krishnaduta30.1nm8az0p', tileSize: 256 });
+        map.addLayer({ id: 'citra2024', type: 'raster', source: 'citra2024', paint: { 'raster-opacity': 1 } });
 
-        // Toggle Layer
+        map.addSource('citra2022', { type: 'raster', url: 'mapbox://krishnaduta30.71l9z45x', tileSize: 256 });
+        map.addLayer({ id: 'citra2022', type: 'raster', source: 'citra2022', paint: { 'raster-opacity': 1 } });
+
         document.getElementById('layer1').addEventListener('change', function (e) {
-            map.setLayoutProperty('klasifikasi2024', 'visibility', e.target.checked ? 'visible' : 'none');
+            map.setLayoutProperty('klasifikasi2022', 'visibility', e.target.checked ? 'visible' : 'none');
         });
         document.getElementById('layer2').addEventListener('change', function (e) {
-            map.setLayoutProperty('klasifikasi2022', 'visibility', e.target.checked ? 'visible' : 'none');
+            map.setLayoutProperty('klasifikasi2024', 'visibility', e.target.checked ? 'visible' : 'none');
         });
         document.getElementById('layer3').addEventListener('change', function (e) {
             map.setLayoutProperty('citra2024', 'visibility', e.target.checked ? 'visible' : 'none');
@@ -159,76 +162,17 @@
             map.setLayoutProperty('citra2022', 'visibility', e.target.checked ? 'visible' : 'none');
         });
 
-        // Ganti Basemap
         document.getElementById('basemap').addEventListener('change', function (e) {
-            const selected = e.target.value;
-            map.setStyle('mapbox://styles/' + selected);
-
-            map.once('styledata', function() {
-                reloadLayers();
-            });
+            map.setStyle('mapbox://styles/' + e.target.value);
         });
 
-        // Control Opacity
         document.getElementById('opacity-slider').addEventListener('input', function (e) {
             const opacity = parseFloat(e.target.value);
-            map.setPaintProperty('klasifikasi2024', 'raster-opacity', opacity);
             map.setPaintProperty('klasifikasi2022', 'raster-opacity', opacity);
+            map.setPaintProperty('klasifikasi2024', 'raster-opacity', opacity);
             map.setPaintProperty('citra2024', 'raster-opacity', opacity);
             map.setPaintProperty('citra2022', 'raster-opacity', opacity);
         });
-
-        function reloadLayers() {
-            map.addSource('klasifikasi2024', {
-            type: 'raster',
-            url: 'mapbox://krishnaduta30.36lm9tv6',
-            tileSize: 256
-            });
-            map.addLayer({
-                id: 'klasifikasi2024',
-                type: 'raster',
-                source: 'klasifikasi2024',
-                paint: { 'raster-opacity': 1 }
-            });
-    
-            // Layer Raster 2
-            map.addSource('klasifikasi2022', {
-                type: 'raster',
-                url: 'mapbox://krishnaduta30.akeeywuh',
-                tileSize: 256
-            });
-            map.addLayer({
-                id: 'klasifikasi2022',
-                type: 'raster',
-                source: 'klasifikasi2022',
-                paint: { 'raster-opacity': 1 }
-            });
-    
-            // Layer Raster 3
-            map.addSource('citra2024', {
-                type: 'raster',
-                url: 'mapbox://krishnaduta30.1nm8az0p',
-                tileSize: 256
-            });
-            map.addLayer({
-                id: 'citra2024',
-                type: 'raster',
-                source: 'citra2024',
-                paint: { 'raster-opacity': 1 }
-            });
-             // Layer Raster 4
-            map.addSource('citra2022', {
-                type: 'raster',
-                url: 'mapbox://krishnaduta30.71l9z45x',
-                tileSize: 256
-            });
-            map.addLayer({
-                id: 'citra2022',
-                type: 'raster',
-                source: 'citra2022',
-                paint: { 'raster-opacity': 1 }
-            });
-        }
     });
 </script>
 
