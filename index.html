@@ -1,67 +1,217 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8" />
-  <title>WebGIS Tutupan Lahan IKN</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Leaflet CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    crossorigin=""
-  />
-  <style>
-    #map { position:absolute; top:0; bottom:0; right:0; left:0; }
-  </style>
+    <meta charset="utf-8">
+    <title>Webmap Raster Komplet</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.16.0/mapbox-gl.css" rel="stylesheet">
+    
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.16.0/mapbox-gl.js"></script>
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        .menu {
+            position: absolute;
+            background: white;
+            padding: 10px;
+            font-family: 'Open Sans', sans-serif;
+            z-index: 2;
+            top: 10px;
+            left: 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            max-width: 220px;
+        }
+        .legend {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: white;
+            padding: 10px;
+            font-family: 'Open Sans', sans-serif;
+            border-radius: 5px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            font-size: 12px;
+            z-index: 2;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            border: 1px solid #ccc;
+        }
+    </style>
 </head>
 <body>
-  <div id="map"></div>
 
-  <!-- Leaflet JS -->
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-  ></script>
+<div id="map"></div>
 
-  <script>
-    // 1) Inisialisasi Map
-    var map = L.map('map').setView([-0.2616, 117.2089], 11); // koordinat IKN
-    console.log('Map berhasil dimuat');
-    // 2) Base layer (OpenStreetMap)
-    var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+<div class="menu">
+    <h4>Layer Control</h4>
+    <input type="checkbox" id="layer1" checked><label for="layer1">Klasifikasi 2024 (4pa3fz)</label><br>
+    <input type="checkbox" id="layer2" checked><label for="layer2">Klasifikasi 2024 (18syak)</label><br>
+    <input type="checkbox" id="layer3" checked><label for="layer3">Citra 2024 (dtu0f0)</label><br><br>
 
-    // 3) Tile layers hasil gdal2tiles
-    var lc2022 = L.tileLayer('tiles/klasifikasi2022/{z}/{x}/{y}.png', {
-      opacity: 0.7,
-      attribution: 'Tutupan Lahan 2022'
+    <h4>Basemap</h4>
+    <select id="basemap">
+        <option value="mapbox/streets-v11">Streets</option>
+        <option value="mapbox/satellite-v9">Satellite</option>
+        <option value="mapbox/light-v10" selected>Light</option>
+        <option value="mapbox/dark-v10">Dark</option>
+    </select><br><br>
+
+    <h4>Opacity</h4>
+    <input type="range" id="opacity-slider" min="0" max="1" step="0.1" value="1">
+</div>
+
+<div class="legend">
+    <h4>Legenda</h4>
+    <div class="legend-item"><div class="legend-color" style="background:#088;"></div> Klasifikasi A</div>
+    <div class="legend-item"><div class="legend-color" style="background:#800080;"></div> Klasifikasi B</div>
+    <div class="legend-item"><div class="legend-color" style="background:#555;"></div> Citra Asli</div>
+</div>
+
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1Ijoia3Jpc2huYWR1dGEzMCIsImEiOiJjbGFydG4xOG8wdTNyM3Buczd1bzJ1eDA2In0._1cmYyhapbWfjEU4DsJ-yg'; // Ganti token kamu di sini
+
+    let styleURL = 'mapbox://styles/mapbox/light-v10';
+
+    const map = new mapboxgl.Map({
+        container: 'map',
+        style: styleURL,
+        center: [116.75, -0.85],
+        zoom: 9
     });
-    var lc2024 = L.tileLayer('tiles/klasifikasi2024/{z}/{x}/{y}.png', {
-      opacity: 0.7,
-      attribution: 'Tutupan Lahan 2024'
-    });
-    var img2022 = L.tileLayer('tiles/citra2022/{z}/{x}/{y}.png', {
-      attribution: 'Citra Satelit 2022'
-    });
-    var img2024 = L.tileLayer('tiles/citra2024/{z}/{x}/{y}.png', {
-      attribution: 'Citra Satelit 2024'
-    });
 
-    // 4) Kelompokkan layer
-    var overlays = {
-      'Tutupan Lahan 2022': lc2022,
-      'Tutupan Lahan 2024': lc2024,
-      'Citra 2022': img2022,
-      'Citra 2024': img2024
-    };
+    map.on('load', function () {
+        // Layer Raster 1
+        map.addSource('klasifikasi-4pa3fz', {
+            type: 'raster',
+            url: 'mapbox://krishnaduta30.4pa3fz',
+            tileSize: 256
+        });
+        map.addLayer({
+            id: 'klasifikasi-4pa3fz',
+            type: 'raster',
+            source: 'klasifikasi-4pa3fz',
+            paint: { 'raster-opacity': 1 }
+        });
 
-    // 5) Layer control
-    L.control.layers({ 'OpenStreetMap': osm }, overlays, {
-      collapsed: false
-    }).addTo(map);
+        // Layer Raster 2
+        map.addSource('klasifikasi-18syak', {
+            type: 'raster',
+            url: 'mapbox://krishnaduta30.18syak',
+            tileSize: 256
+        });
+        map.addLayer({
+            id: 'klasifikasi-18syak',
+            type: 'raster',
+            source: 'klasifikasi-18syak',
+            paint: { 'raster-opacity': 1 }
+        });
 
-    // (opsional) aktifkan satu layer default
-    img2024.addTo(map);
-  </script>
+        // Layer Raster 3
+        map.addSource('citra-dtu0f0', {
+            type: 'raster',
+            url: 'mapbox://krishnaduta30.dtu0f0',
+            tileSize: 256
+        });
+        map.addLayer({
+            id: 'citra-dtu0f0',
+            type: 'raster',
+            source: 'citra-dtu0f0',
+            paint: { 'raster-opacity': 1 }
+        });
+
+        // Toggle Layer Visibility
+        document.getElementById('layer1').addEventListener('change', function (e) {
+            map.setLayoutProperty(
+                'klasifikasi-4pa3fz',
+                'visibility',
+                e.target.checked ? 'visible' : 'none'
+            );
+        });
+        document.getElementById('layer2').addEventListener('change', function (e) {
+            map.setLayoutProperty(
+                'klasifikasi-18syak',
+                'visibility',
+                e.target.checked ? 'visible' : 'none'
+            );
+        });
+        document.getElementById('layer3').addEventListener('change', function (e) {
+            map.setLayoutProperty(
+                'citra-dtu0f0',
+                'visibility',
+                e.target.checked ? 'visible' : 'none'
+            );
+        });
+
+        // Ganti Basemap
+        document.getElementById('basemap').addEventListener('change', function (e) {
+            const selected = e.target.value;
+            map.setStyle('mapbox://styles/' + selected);
+
+            map.once('styledata', function() {
+                // Perlu re-add sumber dan layer setelah ganti style
+                reloadLayers();
+            });
+        });
+
+        // Control Opacity
+        document.getElementById('opacity-slider').addEventListener('input', function (e) {
+            const opacity = parseFloat(e.target.value);
+            map.setPaintProperty('klasifikasi-4pa3fz', 'raster-opacity', opacity);
+            map.setPaintProperty('klasifikasi-18syak', 'raster-opacity', opacity);
+            map.setPaintProperty('citra-dtu0f0', 'raster-opacity', opacity);
+        });
+
+        // Fungsi Reload Layer Setelah Style Ganti
+        function reloadLayers() {
+            // Layer Raster 1
+            map.addSource('klasifikasi-4pa3fz', {
+                type: 'raster',
+                url: 'mapbox://krishnaduta30.4pa3fz',
+                tileSize: 256
+            });
+            map.addLayer({
+                id: 'klasifikasi-4pa3fz',
+                type: 'raster',
+                source: 'klasifikasi-4pa3fz',
+                paint: { 'raster-opacity': parseFloat(document.getElementById('opacity-slider').value) }
+            });
+
+            // Layer Raster 2
+            map.addSource('klasifikasi-18syak', {
+                type: 'raster',
+                url: 'mapbox://krishnaduta30.18syak',
+                tileSize: 256
+            });
+            map.addLayer({
+                id: 'klasifikasi-18syak',
+                type: 'raster',
+                source: 'klasifikasi-18syak',
+                paint: { 'raster-opacity': parseFloat(document.getElementById('opacity-slider').value) }
+            });
+
+            // Layer Raster 3
+            map.addSource('citra-dtu0f0', {
+                type: 'raster',
+                url: 'mapbox://krishnaduta30.dtu0f0',
+                tileSize: 256
+            });
+            map.addLayer({
+                id: 'citra-dtu0f0',
+                type: 'raster',
+                source: 'citra-dtu0f0',
+                paint: { 'raster-opacity': parseFloat(document.getElementById('opacity-slider').value) }
+            });
+        }
+    });
+</script>
+
 </body>
-</html>
