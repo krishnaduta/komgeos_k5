@@ -1,20 +1,55 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>Webmap Raster Komplet</title>
-    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
 
-    <!-- Pakai unpkg CDN untuk MapboxGL -->
+    <!-- Mapbox GL JS CDN via unpkg (Aman untuk GitHub Pages) -->
     <link href="https://unpkg.com/mapbox-gl@2.16.0/dist/mapbox-gl.css" rel="stylesheet" />
     <script src="https://unpkg.com/mapbox-gl@2.16.0/dist/mapbox-gl.js"></script>
 
     <style>
         body { margin: 0; padding: 0; }
         #map { position: absolute; top: 0; bottom: 0; width: 100%; }
-        /* ...style lainnya seperti menu dan legend... */
+        .menu {
+            position: absolute;
+            background: white;
+            padding: 10px;
+            font-family: 'Open Sans', sans-serif;
+            z-index: 2;
+            top: 10px;
+            left: 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            max-width: 220px;
+        }
+        .legend {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: white;
+            padding: 10px;
+            font-family: 'Open Sans', sans-serif;
+            border-radius: 5px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            font-size: 12px;
+            z-index: 2;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
+
 <body>
 
 <div id="map"></div>
@@ -45,13 +80,11 @@
 </div>
 
 <script>
-    mapboxgl.accessToken = 'sk.eyJ1Ijoia3Jpc2huYWR1dGEzMCIsImEiOiJjbWEwdG1lbjQxbjJwMmpzN2Zoa2xzZnJpIn0.fJYyNngnMXyLO-G1upjrag' ; // Ganti token kamu di sini
-
-    let styleURL = 'mapbox://styles/mapbox/light-v10';
+    mapboxgl.accessToken = 'pk.eyJ1Ijoia3Jpc2huYWR1dGEzMCIsImEiOiJjbWEwdHYwanExdjgyMnFzbXVtM3NxN3dmIn0.Q_lMitJOW4djaznX38aAzQ'; // Ganti dengan public token kamu (pk.)
 
     const map = new mapboxgl.Map({
         container: 'map',
-        style: styleURL,
+        style: 'mapbox://styles/mapbox/light-v10',
         center: [116.75, -0.85],
         zoom: 9
     });
@@ -98,25 +131,13 @@
 
         // Toggle Layer Visibility
         document.getElementById('layer1').addEventListener('change', function (e) {
-            map.setLayoutProperty(
-                'klasifikasi-4pa3fz',
-                'visibility',
-                e.target.checked ? 'visible' : 'none'
-            );
+            map.setLayoutProperty('klasifikasi-4pa3fz', 'visibility', e.target.checked ? 'visible' : 'none');
         });
         document.getElementById('layer2').addEventListener('change', function (e) {
-            map.setLayoutProperty(
-                'klasifikasi-18syak',
-                'visibility',
-                e.target.checked ? 'visible' : 'none'
-            );
+            map.setLayoutProperty('klasifikasi-18syak', 'visibility', e.target.checked ? 'visible' : 'none');
         });
         document.getElementById('layer3').addEventListener('change', function (e) {
-            map.setLayoutProperty(
-                'citra-dtu0f0',
-                'visibility',
-                e.target.checked ? 'visible' : 'none'
-            );
+            map.setLayoutProperty('citra-dtu0f0', 'visibility', e.target.checked ? 'visible' : 'none');
         });
 
         // Ganti Basemap
@@ -125,7 +146,6 @@
             map.setStyle('mapbox://styles/' + selected);
 
             map.once('styledata', function() {
-                // Perlu re-add sumber dan layer setelah ganti style
                 reloadLayers();
             });
         });
@@ -138,9 +158,8 @@
             map.setPaintProperty('citra-dtu0f0', 'raster-opacity', opacity);
         });
 
-        // Fungsi Reload Layer Setelah Style Ganti
+        // Fungsi Reload Layer Setelah Ganti Style
         function reloadLayers() {
-            // Layer Raster 1
             map.addSource('klasifikasi-4pa3fz', {
                 type: 'raster',
                 url: 'mapbox://krishnaduta30.4pa3fz',
@@ -153,7 +172,6 @@
                 paint: { 'raster-opacity': parseFloat(document.getElementById('opacity-slider').value) }
             });
 
-            // Layer Raster 2
             map.addSource('klasifikasi-18syak', {
                 type: 'raster',
                 url: 'mapbox://krishnaduta30.18syak',
@@ -166,7 +184,6 @@
                 paint: { 'raster-opacity': parseFloat(document.getElementById('opacity-slider').value) }
             });
 
-            // Layer Raster 3
             map.addSource('citra-dtu0f0', {
                 type: 'raster',
                 url: 'mapbox://krishnaduta30.dtu0f0',
@@ -183,3 +200,4 @@
 </script>
 
 </body>
+</html>
